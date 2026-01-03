@@ -8,25 +8,32 @@ public class ManualDrawTest {
 
     public static void main(String[] args) {
 
-        Customer rafael = new Customer("Rafael");
-        Customer rommel = new Customer("Rommel");
-        Customer handerson = new Customer("Handerson");
+        // Step 1: Scenario
+        Customer user1 = new Customer("Rafael");
+        Customer user2 = new Customer("Rommel");
+        Customer user3 = new Customer("Handerson");
 
         Promotion promotion = new Promotion("Xbox Series X");
-        promotion.register(new Bid(rafael, 300));
-        promotion.register(new Bid(rommel, 400));
-        promotion.register(new Bid(handerson, 250));
+        promotion.register(new Bid(user3, 250.0)); //Lowest
+        promotion.register(new Bid(user1, 300.0));
+        promotion.register(new Bid(user2, 400.0)); //Highest
 
+        // Step 2: Action
         AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
-        System.out.println("Expected: 400.0");
-        System.out.println("Actual: " + auctionService.getHighestBid());
+        // Step 3: Validation
+        double expectedHighest = 400.0;
+        double expectedLowest = 250.0;
 
-        if (400.0 == auctionService.getHighestBid()) {
-            System.out.println("TEST PASSED!");
+        System.out.println("Highest is correct? " + (expectedHighest == auctionService.getHighestBid()));
+        System.out.println("Lowest is correct? " + (expectedLowest == auctionService.getLowestBid()));
+
+        // Final feedback for human
+        if (expectedHighest == auctionService.getHighestBid() && expectedLowest == auctionService.getLowestBid()) {
+            System.out.println("CONGRATULATIONS: All tests passed!");
         } else {
-            System.out.println("TEST FAILED!");
+            System.out.println("ALERT: Test failed!");
         }
     }
 }

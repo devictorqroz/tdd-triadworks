@@ -8,16 +8,22 @@ import org.springframework.stereotype.Service;
 public class AuctionService {
 
     private double highestOfAll = Double.NEGATIVE_INFINITY;
+    private double lowestOfAll = Double.POSITIVE_INFINITY;
 
     public void draw(Promotion promotion) {
         for (Bid bid : promotion.getBids()) {
             if (bid.getValue() > highestOfAll) {
-                highestOfAll = bid.getValue();
+                highestOfAll = Math.max(highestOfAll, bid.getValue());
+                lowestOfAll = Math.min(lowestOfAll, bid.getValue());
             }
         }
     }
 
     public double getHighestBid() {
-        return this.highestOfAll;
+        return highestOfAll;
+    }
+
+    public double getLowestBid() {
+        return lowestOfAll;
     }
 }
