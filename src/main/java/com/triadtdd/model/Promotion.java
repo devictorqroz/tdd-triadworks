@@ -1,9 +1,6 @@
 package com.triadtdd.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +13,7 @@ public class Promotion {
     private Integer id;
     private String name;
 
+    @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bid> bids = new ArrayList<>();
 
     public Promotion() {}
@@ -25,6 +23,7 @@ public class Promotion {
     }
 
     public void register(Bid bid) {
+        bid.setPromotion(this);
         this.bids.add(bid);
     }
 
