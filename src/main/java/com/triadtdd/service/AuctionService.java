@@ -11,10 +11,16 @@ public class AuctionService {
     private double lowestOfAll = Double.POSITIVE_INFINITY;
 
     public void draw(Promotion promotion) {
+
+        this.highestOfAll = Double.NEGATIVE_INFINITY;
+        this.lowestOfAll = Double.POSITIVE_INFINITY;
+
         for (Bid bid : promotion.getBids()) {
             if (bid.getValue() > highestOfAll) {
-                highestOfAll = Math.max(highestOfAll, bid.getValue());
-                lowestOfAll = Math.min(lowestOfAll, bid.getValue());
+                highestOfAll = bid.getValue();
+            }
+            if (bid.getValue() < lowestOfAll) {
+                lowestOfAll = bid.getValue();
             }
         }
     }
@@ -22,7 +28,6 @@ public class AuctionService {
     public double getHighestBid() {
         return highestOfAll;
     }
-
     public double getLowestBid() {
         return lowestOfAll;
     }
