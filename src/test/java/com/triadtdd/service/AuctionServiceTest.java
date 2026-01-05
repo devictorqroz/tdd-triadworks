@@ -4,6 +4,9 @@ import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AuctionServiceTest {
@@ -73,5 +76,55 @@ class AuctionServiceTest {
 
         assertEquals(600.0, auctionService.getHighestBid(), 0.0001);
         assertEquals(600.0, auctionService.getLowestBid(), 0.0001);
+    }
+
+    @Test
+    void shouldFindThreeSmallestBids() {
+        Customer user = new Customer("Rafael");
+        Promotion promotion = new Promotion("Opala SS 1976");
+        promotion.register(new Bid(user, 300.0));
+        promotion.register(new Bid(user, 100.0));
+        promotion.register(new Bid(user, 20.0));
+        promotion.register(new Bid(user, 440.0));
+        promotion.register(new Bid(user, 1.25));
+
+        AuctionService auctionService = new AuctionService();
+        auctionService.draw(promotion);
+
+        List<Bid> smallest = auctionService.getThreeSmallestBids();
+
+        assertEquals(3, smallest.size());
+        assertEquals(1.25, smallest.get(0).getValue(), 0.0001);
+        assertEquals(20.0, smallest.get(1).getValue(), 0.0001);
+        assertEquals(100.0, smallest.get(2).getValue(), 0.0001);
+    }
+
+    @Test
+    void shouldReturnAllBidsIfThereAreLessThanThree() {
+        Customer user = new Customer("Rafael");
+        Promotion promotion = new Promotion("Hunter License");
+        promotion.register(new Bid(user, 500.0));
+        promotion.register(new Bid(user, 200.0));
+
+        AuctionService auctionService = new AuctionService();
+        auctionService.draw(promotion);
+
+        List<Bid> smallest = auctionService.getThreeSmallestBids();
+
+        assertEquals(2, smallest.size());
+        assertEquals(200.0, smallest.get(0).getValue(), 0.0001);
+        assertEquals(500.0, smallest.get(1).getValue(), 0.0001);
+    }
+
+    @Test
+    void shouldReturnEmptyListIfThereAreNoBids() {
+        Promotion promotion = new Promotion("Balde com areia");
+
+        AuctionService auctionService = new AuctionService();
+        auctionService.draw(promotion);
+
+        List<Bid> smallest = auctionService.getThreeSmallestBids();
+
+        assertEquals(0, smallest.size());
     }
 }
