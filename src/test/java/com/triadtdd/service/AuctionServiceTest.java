@@ -3,6 +3,7 @@ package com.triadtdd.service;
 import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -12,8 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AuctionServiceTest {
 
     @Test
-    void shouldUnderstandBidsInAscendingOrder() {
-
+    @DisplayName("Should find highest and lowest bids in ascending order")
+    void shouldDrawBidsInAscendingOrder() {
         Customer user1 = new Customer("Rafael");
         Customer user2 = new Customer("Rommel");
         Customer user3 = new Customer("Handerson");
@@ -31,7 +32,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldUnderstandBidsInDescendingOrder() {
+    @DisplayName("Should find highest and lowest bids in descending order")
+    void shouldDrawBidsInDescendingOrder() {
         Customer user1 = new Customer("John");
 
         Promotion promotion = new Promotion("Fender Vintage Serie");
@@ -47,7 +49,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldUnderstandBidsInRandomOrder() {
+    @DisplayName("Should find highest and lowest bids in random order")
+    void shouldDrawBidsInRandomOrder() {
         Customer user1 = new Customer("Rafael");
 
         Promotion promotion = new Promotion("HD Fat Boy Limited");
@@ -65,7 +68,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldUnderstandPromotionWithOnlyOneBid() {
+    @DisplayName("Should find highest and lowest bids when promotions has only one bid")
+    void shouldDrawWhenPromotionHasOnlyOneBid() {
         Customer user1 = new Customer("Rafael");
 
         Promotion promotion = new Promotion("Desert Eagle .50");
@@ -79,7 +83,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldFindThreeSmallestBids() {
+    @DisplayName("Should find the 3 smallest bids in a list")
+    void shouldFindTheThreeSmallestBids() {
         Customer user = new Customer("Rafael");
         Promotion promotion = new Promotion("Opala SS 1976");
         promotion.register(new Bid(user, 300.0));
@@ -100,7 +105,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldReturnAllBidsIfThereAreLessThanThree() {
+    @DisplayName("Should return all bids when the list has less than three items")
+    void shouldDrawAllBidsWhenListIsSmallerThanThree() {
         Customer user = new Customer("Rafael");
         Promotion promotion = new Promotion("Hunter License");
         promotion.register(new Bid(user, 500.0));
@@ -117,7 +123,8 @@ class AuctionServiceTest {
     }
 
     @Test
-    void shouldReturnEmptyListIfThereAreNoBids() {
+    @DisplayName("Should return empty list when there are no bids")
+    void shouldNotDrawWhenThereAreNoBids() {
         Promotion promotion = new Promotion("Balde com areia");
 
         AuctionService auctionService = new AuctionService();
