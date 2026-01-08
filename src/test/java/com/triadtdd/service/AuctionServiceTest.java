@@ -1,8 +1,11 @@
 package com.triadtdd.service;
 
+import com.triadtdd.builders.PromotionBuilder;
 import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -11,120 +14,135 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class AuctionServiceTest {
 
-    @Test
-    void shouldUnderstandBidsInAscendingOrder() {
+    private AuctionService auctionService;
+    private Customer rafael;
+    private Customer rommel;
+    private Customer handerson;
 
-        Customer user1 = new Customer("Rafael");
-        Customer user2 = new Customer("Rommel");
-        Customer user3 = new Customer("Handerson");
-
-        Promotion promotion = new Promotion("Xbox Series X");
-        promotion.register(new Bid(user3, 250.0));
-        promotion.register(new Bid(user1, 300.0));
-        promotion.register(new Bid(user2, 400.0));
-
-        AuctionService auctionService = new AuctionService();
-        auctionService.draw(promotion);
-
-        assertEquals(400.0, auctionService.getHighestBid(), 0.0001);
-        assertEquals(250.0, auctionService.getLowestBid(), 0.0001);
+    @BeforeEach
+    void setup() {
+        this.auctionService = new AuctionService();
+        this.rafael = new Customer("Rafael");
+        this.rommel = new Customer("Rommel");
+        this.handerson = new Customer("Handerson");
     }
 
     @Test
-    void shouldUnderstandBidsInDescendingOrder() {
-        Customer user1 = new Customer("John");
+    @DisplayName("Should find highest and lowest bids in ascending order")
+    void shouldDrawBidsInAscendingOrder() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Xbox Series X")
+                .withBid(handerson, 250.0)
+                .withBid(rafael, 300.0)
+                .withBid(rommel, 400.0)
+                .build();
 
-        Promotion promotion = new Promotion("Fender Vintage Serie");
-        promotion.register(new Bid(user1, 400.0));
-        promotion.register(new Bid(user1, 300.0));
-        promotion.register(new Bid(user1, 250.0));
 
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
-        assertEquals(400.0, auctionService.getHighestBid(), 0.0001);
-        assertEquals(250.0, auctionService.getLowestBid(), 0.0001);
+        assertEquals(400.0, auctionService.getHighestBid(), 0.0001, () -> "Highest bid should be 400.0");
+        assertEquals(250.0, auctionService.getLowestBid(), 0.0001, () -> "Lowest bid should be 250.0");
     }
 
     @Test
-    void shouldUnderstandBidsInRandomOrder() {
-        Customer user1 = new Customer("Rafael");
+    @DisplayName("Should find highest and lowest bids in descending order")
+    void shouldDrawBidsInDescendingOrder() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Fender Vintage Serie")
+                .withBid(rafael, 400.0)
+                .withBid(rommel, 300.0)
+                .withBid(handerson, 250.0)
+                .build();
 
-        Promotion promotion = new Promotion("HD Fat Boy Limited");
-        promotion.register(new Bid(user1, 1050.0));
-        promotion.register(new Bid(user1, 2990.99)); // Highest
-        promotion.register(new Bid(user1, 24.70));
-        promotion.register(new Bid(user1, 477.0));
-        promotion.register(new Bid(user1, 1.25)); // Lowest
-
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
-        assertEquals(2990.99, auctionService.getHighestBid(), 0.0001);
-        assertEquals(1.25, auctionService.getLowestBid(), 0.0001);
+        assertEquals(400.0, auctionService.getHighestBid(), 0.0001, () -> "Highest bid should be 400.0");
+        assertEquals(250.0, auctionService.getLowestBid(), 0.0001, () -> "Lowest bid should be 250.0");
     }
 
     @Test
-    void shouldUnderstandPromotionWithOnlyOneBid() {
-        Customer user1 = new Customer("Rafael");
+    @DisplayName("Should find highest and lowest bids in random order")
+    void shouldDrawBidsInRandomOrder() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("HD Fat Boy Limited")
+                .withBid(handerson, 1050.0)
+                .withBid(rafael, 2990.99)
+                .withBid(rafael, 24.70)
+                .withBid(rommel, 477.0)
+                .withBid(handerson, 1.25)
+                .build();
 
-        Promotion promotion = new Promotion("Desert Eagle .50");
-        promotion.register(new Bid(user1, 600.0));
-
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
-        assertEquals(600.0, auctionService.getHighestBid(), 0.0001);
+        assertEquals(2990.99, auctionService.getHighestBid(), 0.0001, () -> "Highest bid should be 2990.99");
+        assertEquals(1.25, auctionService.getLowestBid(), 0.0001, () -> "Lowest bid should be 1.25");
+    }
+
+    @Test
+    @DisplayName("Should find highest and lowest bids when promotions has only one bid")
+    void shouldDrawWhenPromotionHasOnlyOneBid() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Desert Eagle .50")
+                .withBid(handerson, 600.0)
+                .build();
+
+        auctionService.draw(promotion);
+
+        assertEquals(600.0, auctionService.getHighestBid(), 0.0001, () -> "Highest and Lowest bid should be 600.0");
         assertEquals(600.0, auctionService.getLowestBid(), 0.0001);
     }
 
     @Test
-    void shouldFindThreeSmallestBids() {
-        Customer user = new Customer("Rafael");
-        Promotion promotion = new Promotion("Opala SS 1976");
-        promotion.register(new Bid(user, 300.0));
-        promotion.register(new Bid(user, 100.0));
-        promotion.register(new Bid(user, 20.0));
-        promotion.register(new Bid(user, 440.0));
-        promotion.register(new Bid(user, 1.25));
+    @DisplayName("Should find the 3 smallest bids in a list")
+    void shouldFindTheThreeSmallestBids() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Opala SS 1976")
+                .withBid(handerson, 300.0)
+                .withBid(handerson, 100.0)
+                .withBid(handerson, 20.0)
+                .withBid(handerson, 440.0)
+                .withBid(handerson, 1.25)
+                .build();
 
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
         List<Bid> smallest = auctionService.getThreeSmallestBids();
 
-        assertEquals(3, smallest.size());
+        assertEquals(3, smallest.size(), () -> "Should have found exactly 3 bids");
         assertEquals(1.25, smallest.get(0).getValue(), 0.0001);
         assertEquals(20.0, smallest.get(1).getValue(), 0.0001);
         assertEquals(100.0, smallest.get(2).getValue(), 0.0001);
     }
 
     @Test
-    void shouldReturnAllBidsIfThereAreLessThanThree() {
-        Customer user = new Customer("Rafael");
-        Promotion promotion = new Promotion("Hunter License");
-        promotion.register(new Bid(user, 500.0));
-        promotion.register(new Bid(user, 200.0));
+    @DisplayName("Should return all bids when the list has less than three items")
+    void shouldDrawAllBidsWhenListIsSmallerThanThree() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Hunter License")
+                .withBid(rafael, 500.0)
+                .withBid(handerson,200.0)
+                .build();
 
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
         List<Bid> smallest = auctionService.getThreeSmallestBids();
 
-        assertEquals(2, smallest.size());
+        assertEquals(2, smallest.size(), () -> "Should have found exactly 2 bids");
         assertEquals(200.0, smallest.get(0).getValue(), 0.0001);
         assertEquals(500.0, smallest.get(1).getValue(), 0.0001);
     }
 
     @Test
-    void shouldReturnEmptyListIfThereAreNoBids() {
-        Promotion promotion = new Promotion("Balde com areia");
+    @DisplayName("Should return empty list when there are no bids")
+    void shouldNotDrawWhenThereAreNoBids() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Balde com areia")
+                .build();
 
-        AuctionService auctionService = new AuctionService();
         auctionService.draw(promotion);
 
         List<Bid> smallest = auctionService.getThreeSmallestBids();
 
-        assertEquals(0, smallest.size());
+        assertEquals(0, smallest.size(), () -> "Smallest bids list should be empty");
     }
 }
