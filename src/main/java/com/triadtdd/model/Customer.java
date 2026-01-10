@@ -5,6 +5,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.Objects;
+
 @Entity
 public class Customer {
 
@@ -40,4 +42,14 @@ public class Customer {
         this.email = email;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (!(object instanceof Customer customer)) return false;
+        return Objects.equals(id, customer.id) && Objects.equals(name, customer.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 }

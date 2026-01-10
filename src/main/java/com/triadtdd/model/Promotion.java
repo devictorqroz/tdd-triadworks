@@ -23,11 +23,22 @@ public class Promotion {
     }
 
     public void register(Bid bid) {
+        if (isBidFromSameCustomerAsLastBid(bid.getCustomer())) {
+            return;
+        }
         bid.setPromotion(this);
         this.bids.add(bid);
     }
 
     public List<Bid> getBids() {
         return bids;
+    }
+
+    private boolean isBidFromSameCustomerAsLastBid(Customer customer) {
+        if (bids.isEmpty()) {
+            return false;
+        }
+        Customer lastCustomer = bids.get(bids.size() - 1).getCustomer();
+        return lastCustomer.equals(customer);
     }
 }

@@ -49,4 +49,18 @@ public class PromotionTest {
         assertEquals(100.0, bids.get(0).getValue(), 0.0001);
         assertEquals(300.0, bids.get(1).getValue(), 0.0001);
     }
+
+    @Test
+    @DisplayName("Should ignore a second consecutive bid from the same customer")
+    void shouldNotRegisterTwoBidsInSequenceFromSameCustomer() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Winchester 1873")
+                .withBid(rafael, 1000.0)
+                .withBid(rafael, 800.0)
+                .build();
+
+        List<Bid> bids = promotion.getBids();
+        assertEquals(1, bids.size(), () -> "Should have only 1 bid");
+        assertEquals(1000.0, bids.get(0).getValue(), 0.0001);
+    }
 }

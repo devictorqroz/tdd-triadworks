@@ -98,9 +98,9 @@ class AuctionServiceTest {
         Promotion promotion = PromotionBuilder.onePromotion()
                 .named("Opala SS 1976")
                 .withBid(handerson, 300.0)
-                .withBid(handerson, 100.0)
+                .withBid(rafael, 100.0)
                 .withBid(handerson, 20.0)
-                .withBid(handerson, 440.0)
+                .withBid(rommel, 440.0)
                 .withBid(handerson, 1.25)
                 .build();
 
