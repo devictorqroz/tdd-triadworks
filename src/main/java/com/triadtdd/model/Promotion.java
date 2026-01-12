@@ -22,19 +22,29 @@ public class Promotion {
         this.name = name;
     }
 
-    public void register(Bid bid) {
-        if (isBidFromSameCustomerAsLastBid(bid.getCustomer())) {
-            return;
-        }
-        bid.setPromotion(this);
-        this.bids.add(bid);
-    }
-
     public List<Bid> getBids() {
         return bids;
     }
 
-    private boolean isBidFromSameCustomerAsLastBid(Customer customer) {
+    public void register(Bid bid) {
+        Customer customer = bid.getCustomer();
+
+        if (hasExceededMaxBids(customer) || isConsecutiveBidFromSameCustomer(customer)) {
+            return;
+        }
+
+        bid.setPromotion(this);
+        this.bids.add(bid);
+    }
+
+    private boolean hasExceededMaxBids(Customer customer) {
+        long total = bids.stream()
+                .filter(b -> b.getCustomer().equals(customer))
+                .count();
+        return total >= 5;
+    }
+
+    private boolean isConsecutiveBidFromSameCustomer(Customer customer) {
         if (bids.isEmpty()) {
             return false;
         }

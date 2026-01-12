@@ -63,4 +63,31 @@ public class PromotionTest {
         assertEquals(1, bids.size(), () -> "Should have only 1 bid");
         assertEquals(1000.0, bids.get(0).getValue(), 0.0001);
     }
+
+    @Test
+    @DisplayName("Should not allow more than five bids from the same customer")
+    void shouldNotRegisterMoreThanFivesBidsFromSameCustomer() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("HD Fat Boy Limited")
+                .withBid(rafael, 100.0)
+                .withBid(handerson, 200.0)
+                .withBid(rafael, 300.0)
+                .withBid(handerson, 400.0)
+                .withBid(rafael, 500.0)
+                .withBid(handerson, 600.0)
+                .withBid(rafael, 700.0)
+                .withBid(handerson, 800.0)
+                .withBid(rafael, 900.0)
+                .withBid(handerson, 1000.0)
+                .withBid(rafael, 1100.0)
+                .build();
+
+        List<Bid> bids = promotion.getBids();
+
+        assertEquals(10, bids.size(), () -> "Should have exactly 10 bids");
+
+        double lastBidValue = bids.get(bids.size()-1).getValue();
+        assertEquals(1000.0, lastBidValue, 0.0001, () -> "Last bid value should be from Handerson (1000.0)");
+    }
+
 }
