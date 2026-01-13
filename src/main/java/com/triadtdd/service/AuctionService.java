@@ -16,6 +16,10 @@ public class AuctionService {
     private List<Bid> smallestBids = new ArrayList<>();
 
     public void draw(Promotion promotion) {
+        if (promotion.getBids().isEmpty()) {
+            throw new RuntimeException("Cannot draw a promotion without bids.");
+        }
+
         this.highestOfAll = Double.NEGATIVE_INFINITY;
         this.lowestOfAll = Double.POSITIVE_INFINITY;
 

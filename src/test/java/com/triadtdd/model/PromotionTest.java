@@ -6,6 +6,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.List;
 
@@ -90,4 +91,26 @@ public class PromotionTest {
         assertEquals(1000.0, lastBidValue, 0.0001, () -> "Last bid value should be from Handerson (1000.0)");
     }
 
+
+    @Test
+    @DisplayName("Should not register bids with negative values")
+    void shouldNotRegisterNegativeBids() {
+        assertThrows(RuntimeException.class, () -> {
+            Promotion promotion = PromotionBuilder.onePromotion()
+                    .named("Espada Cruzada")
+                    .withBid(rafael, -10.0)
+                    .build();
+        }, "Should throw RuntimeException for negative bid values");
+    }
+
+    @Test
+    @DisplayName("Should not register bids with zero value")
+    void shouldNotRegisterZeroValueBids() {
+        assertThrows(RuntimeException.class, () -> {
+            Promotion promotion = PromotionBuilder.onePromotion()
+                    .named("Espada Cruzada")
+                    .withBid(rafael, 0.0)
+                    .build();
+        }, "Should throw RuntimeException for zero bid values");
+    }
 }

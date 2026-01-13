@@ -27,8 +27,11 @@ public class Promotion {
     }
 
     public void register(Bid bid) {
-        Customer customer = bid.getCustomer();
+        if (bid.getValue() <= 0) {
+            throw new RuntimeException("Bid value must be greater than zero.");
+        }
 
+        Customer customer = bid.getCustomer();
         if (hasExceededMaxBids(customer) || isConsecutiveBidFromSameCustomer(customer)) {
             return;
         }

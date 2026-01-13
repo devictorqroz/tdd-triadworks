@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class AuctionServiceTest {
 
@@ -131,18 +132,16 @@ class AuctionServiceTest {
         assertEquals(200.0, smallest.get(0).getValue(), 0.0001);
         assertEquals(500.0, smallest.get(1).getValue(), 0.0001);
     }
-
+    
     @Test
-    @DisplayName("Should return empty list when there are no bids")
-    void shouldNotDrawWhenThereAreNoBids() {
+    @DisplayName("Should throw exception when drawing a promotion with no bids")
+    void shouldThrowExceptionWhenPromotionHasNoBids() {
         Promotion promotion = PromotionBuilder.onePromotion()
-                .named("Balde com areia")
+                .named("Empty Box")
                 .build();
 
-        auctionService.draw(promotion);
-
-        List<Bid> smallest = auctionService.getThreeSmallestBids();
-
-        assertEquals(0, smallest.size(), () -> "Smallest bids list should be empty");
+        assertThrows(RuntimeException.class, () -> {
+            auctionService.draw(promotion);
+        }, "Should not allow drawing a promotion without bids");
     }
 }
