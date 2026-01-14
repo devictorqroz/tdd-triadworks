@@ -22,12 +22,36 @@ public class Promotion {
         this.name = name;
     }
 
+    public List<Bid> getBids() {
+        return bids;
+    }
+
     public void register(Bid bid) {
+        if (bid.getValue() <= 0) {
+            throw new RuntimeException("Bid value must be greater than zero.");
+        }
+
+        Customer customer = bid.getCustomer();
+        if (hasExceededMaxBids(customer) || isConsecutiveBidFromSameCustomer(customer)) {
+            return;
+        }
+
         bid.setPromotion(this);
         this.bids.add(bid);
     }
 
-    public List<Bid> getBids() {
-        return bids;
+    private boolean hasExceededMaxBids(Customer customer) {
+        long total = bids.stream()
+                .filter(b -> b.getCustomer().equals(customer))
+                .count();
+        return total >= 5;
+    }
+
+    private boolean isConsecutiveBidFromSameCustomer(Customer customer) {
+        if (bids.isEmpty()) {
+            return false;
+        }
+        Customer lastCustomer = bids.get(bids.size() - 1).getCustomer();
+        return lastCustomer.equals(customer);
     }
 }
