@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AuctionServiceTest {
 
@@ -143,5 +142,42 @@ class AuctionServiceTest {
         assertThrows(RuntimeException.class, () -> {
             auctionService.draw(promotion);
         }, "Should not allow drawing a promotion without bids");
+    }
+
+    @Test
+    @DisplayName("Should find the smallest unique bid in a promotion")
+    void shouldFindSmallestUniqueBid() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("Macbook Pro")
+                .withBid(rafael, 300.0)
+                .withBid(handerson, 1.25)
+                .withBid(rommel, 100.0)
+                .withBid(rafael, 2020.0)
+                .withBid(handerson, 0.1)
+                .withBid(rommel, 0.24)
+                .withBid(rafael, 11.0)
+                .withBid(handerson, 6.9)
+                .withBid(rafael, 0.1)
+                .withBid(rommel, 1.25)
+                .build();
+
+        auctionService.draw(promotion);
+
+        Bid smallestUnique = auctionService.getSmallestUniqueBid();
+        assertEquals(0.24, smallestUnique.getValue(), 0.0001, () -> "The smallest unique bid should be 0.24");
+    }
+
+    @Test
+    @DisplayName("Should return null when there are no unique bids")
+    void shouldReturnNullWhenNoUniqueBidsExist() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .named("No unique item")
+                .withBid(rafael, 100.0)
+                .withBid(handerson, 100.0)
+                .build();
+
+        auctionService.draw(promotion);
+
+        assertNull(auctionService.getSmallestUniqueBid(), () -> "Should be null if all bids are repeated");
     }
 }
