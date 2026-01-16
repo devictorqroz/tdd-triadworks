@@ -10,12 +10,16 @@ public class PromotionBuilder {
 
     private Promotion promotion;
 
+    private PromotionBuilder() {
+        this.promotion = new Promotion();
+    }
+
     public static PromotionBuilder onePromotion() {
         return new PromotionBuilder();
     }
 
     public PromotionBuilder named(String name) {
-        this.promotion = new Promotion(name);
+        this.promotion.setName(name);
         return this;
     }
 

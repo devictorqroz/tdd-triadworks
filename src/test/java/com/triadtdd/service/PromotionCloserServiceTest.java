@@ -5,7 +5,6 @@ import com.triadtdd.model.Promotion;
 import com.triadtdd.repository.PromotionDAO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -74,5 +73,46 @@ public class PromotionCloserServiceTest {
         PromotionCloserService closer = new PromotionCloserService(daoMock);
 
         assertThrows(RuntimeException.class, () -> closer.close());
+    }
+
+    @Test
+    @DisplayName("Should update promotions in the database when they are closed")
+    void shouldUpdateClosedPromotionsInDatabase() {
+        LocalDate oldDate = LocalDate.now().minusDays(31);
+
+        Promotion imac = PromotionBuilder.onePromotion()
+                .named("Imac")
+                .onDate(oldDate)
+                .build();
+
+        Promotion ipad = PromotionBuilder.onePromotion()
+                .named("Ipad")
+                .onDate(oldDate)
+                .build();
+
+
+        List<Promotion> promotions = List.of(ipad);
+        PromotionDAO daoMock = mock(PromotionDAO.class);
+        when(daoMock.getOpenPromotions()).thenReturn(promotions);
+
+        PromotionCloserService closer = new PromotionCloserService(daoMock);
+        closer.close();
+
+        verify(daoMock, times(1)).update(ipad);
+    }
+
+    @Test
+    @DisplayName("Should NOT update active promotions in the database")
+    void shouldNotUpdateActivePromotions() {
+        LocalDate today = LocalDate.now();
+        Promotion active = PromotionBuilder.onePromotion().onDate(today).build();
+
+        PromotionDAO daoMock = mock(PromotionDAO.class);
+        when(daoMock.getOpenPromotions()).thenReturn(List.of(active));
+
+        PromotionCloserService closer = new PromotionCloserService(daoMock);
+        closer.close();
+
+        verify(daoMock, never()).update(active);
     }
 }

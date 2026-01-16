@@ -26,6 +26,10 @@ public class Promotion {
         this.name = name;
     }
 
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+
     public List<Bid> getBids() {
         return bids;
     }
@@ -80,6 +84,7 @@ public class Promotion {
     }
 
     public boolean isExpired(LocalDate baseDate) {
+        if (this.date == null || baseDate == null) return false;
         Long days = ChronoUnit.DAYS.between(this.date, baseDate);
         return days >= 30;
     }
