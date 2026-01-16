@@ -4,16 +4,27 @@ import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
 
+import java.time.LocalDate;
+
 public class PromotionBuilder {
 
     private Promotion promotion;
+
+    private PromotionBuilder() {
+        this.promotion = new Promotion();
+    }
 
     public static PromotionBuilder onePromotion() {
         return new PromotionBuilder();
     }
 
     public PromotionBuilder named(String name) {
-        this.promotion = new Promotion(name);
+        this.promotion.setName(name);
+        return this;
+    }
+
+    public PromotionBuilder onDate(LocalDate date) {
+        this.promotion.setDate(date);
         return this;
     }
 

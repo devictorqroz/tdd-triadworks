@@ -2,6 +2,8 @@ package com.triadtdd.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +14,8 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private Status status = Status.OPEN;
+    private LocalDate date;
 
     @OneToMany(mappedBy = "promotion", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Bid> bids = new ArrayList<>();
@@ -22,8 +26,32 @@ public class Promotion {
         this.name = name;
     }
 
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+
     public List<Bid> getBids() {
         return bids;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public boolean isClosed() {
+        return Status.CLOSED.equals(this.status);
     }
 
     public void register(Bid bid) {
@@ -53,5 +81,11 @@ public class Promotion {
         }
         Customer lastCustomer = bids.get(bids.size() - 1).getCustomer();
         return lastCustomer.equals(customer);
+    }
+
+    public boolean isExpired(LocalDate baseDate) {
+        if (this.date == null || baseDate == null) return false;
+        Long days = ChronoUnit.DAYS.between(this.date, baseDate);
+        return days >= 30;
     }
 }
