@@ -80,6 +80,7 @@ public class Promotion {
     }
 
     public boolean isExpired(LocalDate baseDate) {
-        return ChronoUnit.DAYS.between(this.date, baseDate) >= 30;
+        Long days = ChronoUnit.DAYS.between(this.date, baseDate);
+        return days >= 30;
     }
 }
