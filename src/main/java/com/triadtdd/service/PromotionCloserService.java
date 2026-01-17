@@ -22,10 +22,14 @@ public class PromotionCloserService {
         int total = 0;
 
         for (Promotion p : opens) {
-            if (p.isExpired(LocalDate.now())) {
-                p.setStatus(Status.CLOSED);
-                this.dao.update(p);
-                total++;
+            try {
+                if (p.isExpired(LocalDate.now())) {
+                    p.setStatus(Status.CLOSED);
+                    this.dao.update(p);
+                    total++;
+                }
+            } catch (Exception e) {
+                System.err.println("Error closing promotion: " + p.getName());
             }
         }
         return total;

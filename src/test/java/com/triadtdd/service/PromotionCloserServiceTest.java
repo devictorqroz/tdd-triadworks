@@ -115,4 +115,46 @@ public class PromotionCloserServiceTest {
 
         verify(daoMock, never()).update(active);
     }
+
+    @Test
+    @DisplayName("Should continue processing remaining promotions even when one fails")
+    void shouldContinueProcessingWhenOnePromotionFails() {
+        // 1. Scenario
+        LocalDate oldDate = LocalDate.now().minusDays(31);
+        Promotion p1 = PromotionBuilder.onePromotion().named("First").onDate(oldDate).build();
+        Promotion p2 = PromotionBuilder.onePromotion().named("Second").onDate(oldDate).build();
+
+        PromotionDAO daoMock = mock(PromotionDAO.class);
+        when(daoMock.getOpenPromotions()).thenReturn(List.of(p1, p2));
+
+        // 2. Setup error: first will fail in update
+        doThrow(new RuntimeException("Database error")).when(daoMock).update(p1);
+
+        // 3. Action
+        PromotionCloserService closer = new PromotionCloserService(daoMock);
+        int totalClosed = closer.close();
+
+        // 4. Verification
+        verify(daoMock, times(1)).update(p2);
+
+        // total should be 1, cause p1 fail before the iterator increments the count
+        assertEquals(1, totalClosed, "Only the second promotion should be counted as closed");
+    }
+
+    @Test
+    @DisplayName("Should return zero closed when all database updates fail")
+    void shouldReturnZeroWhenAllUpdatesFail() {
+        Promotion p1 = PromotionBuilder.onePromotion().onDate(LocalDate.now().minusDays(31)).build();
+        Promotion p2 = PromotionBuilder.onePromotion().onDate(LocalDate.now().minusDays(31)).build();
+
+        PromotionDAO daoMock = mock(PromotionDAO.class);
+        when(daoMock.getOpenPromotions()).thenReturn(List.of(p1, p2));
+
+        doThrow(new RuntimeException()).when(daoMock).update(any(Promotion.class));
+
+        PromotionCloserService closer = new PromotionCloserService(daoMock);
+        int total = closer.close();
+
+        assertEquals(0, total, "No promotion should be counted if all updates fail");
+    }
 }
