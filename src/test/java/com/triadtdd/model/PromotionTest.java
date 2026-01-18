@@ -5,10 +5,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import java.time.LocalDate;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PromotionTest {
 
@@ -127,4 +127,35 @@ public class PromotionTest {
         }, "Should throw RuntimeException when bid exceeds max value");
     }
 
+    @Test
+    @DisplayName("Should register bid when maxBidValue is zero (no limit)")
+    void shouldRegisterBidWhenNoLimitIsDefined() {
+        Promotion promotion = new Promotion("No Limit");
+
+        promotion.register(new Bid(rafael, 5000.0));
+
+        assertEquals(1, promotion.getBids().size());
+    }
+
+    @Test
+    @DisplayName("Should return false when promotion date is null")
+    void shouldReturnFalseWhenDateIsNull() {
+        Promotion promotion = new Promotion("No Date");
+
+        boolean expired = promotion.isExpired(LocalDate.now());
+
+        assertFalse(expired, "Should not be expired if date is null");
+    }
+
+    @Test
+    @DisplayName("Should return false when baseDate argument is null")
+    void shouldReturnFalseWhenArgumentIsNull() {
+        Promotion promotion = PromotionBuilder.onePromotion()
+                .onDate(LocalDate.now())
+                .build();
+
+        boolean expired = promotion.isExpired(null);
+
+        assertFalse(expired);
+    }
 }
