@@ -20,6 +20,12 @@ public class PromotionBuilder {
 
     public PromotionBuilder named(String name) {
         this.promotion.setName(name);
+        this.promotion.setMaxBidValue(10000.0);
+        return this;
+    }
+
+    public PromotionBuilder withMaxBidValue(double value) {
+        this.promotion.setMaxBidValue(value);
         return this;
     }
 
