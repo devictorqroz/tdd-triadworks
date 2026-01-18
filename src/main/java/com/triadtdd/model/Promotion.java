@@ -14,7 +14,7 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private Double maxBidValue;
+    private double maxBidValue;
     private Status status = Status.OPEN;
     private LocalDate date;
 
