@@ -14,6 +14,7 @@ public class Promotion {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
+    private Double maxBidValue;
     private Status status = Status.OPEN;
     private LocalDate date;
 
@@ -29,6 +30,14 @@ public class Promotion {
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
+
+    public Double getMaxBidValue() {
+        return maxBidValue;
+    }
+
+    public void setMaxBidValue(Double maxBidValue) {
+        this.maxBidValue = maxBidValue;
+    }
 
     public List<Bid> getBids() {
         return bids;
@@ -57,6 +66,10 @@ public class Promotion {
     public void register(Bid bid) {
         if (bid.getValue() <= 0) {
             throw new RuntimeException("Bid value must be greater than zero.");
+        }
+
+        if (this.maxBidValue > 0 && bid.getValue() > this.maxBidValue) {
+            throw new RuntimeException("Bid value is greater than the maximum allowed.");
         }
 
         Customer customer = bid.getCustomer();

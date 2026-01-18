@@ -113,4 +113,18 @@ public class PromotionTest {
                     .build();
         }, "Should throw RuntimeException for zero bid values");
     }
+
+    @Test
+    @DisplayName("Should not allow a bid higher than the promotion's maximum value")
+    void shouldNotRegisterBidHigherThanMaximumValue() {
+
+        assertThrows(RuntimeException.class, () -> {
+            PromotionBuilder.onePromotion()
+                    .named("Mackbook Pro")
+                    .withMaxBidValue(1000.0)
+                    .withBid(rafael, 1000.01)
+                    .build();
+        }, "Should throw RuntimeException when bid exceeds max value");
+    }
+
 }
