@@ -1,10 +1,12 @@
 package com.triadtdd.repository;
 
+import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
 import com.triadtdd.model.Status;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +42,21 @@ public class PromotionDAO {
             Thread.sleep(2000);
         } catch (InterruptedException e) {}
         return new ArrayList<>();
+    }
+
+
+    public List<Promotion> openFor(Customer customer, LocalDate start) {
+        String jpql = "select p from Promotion p join p.bids b " +
+                    "where b.customer = :customer " +
+                    "and p.date >= :start " +
+                    "and p.status = :status " +
+                    "order by p.date desc";
+
+        return em.createQuery(jpql, Promotion.class)
+                .setParameter("customer", customer)
+                .setParameter("start", start)
+                .setParameter("status", Status.OPEN)
+                .getResultList();
     }
 
     public void update(Promotion p) {
