@@ -3,6 +3,7 @@ package com.triadtdd.builders;
 import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
+import com.triadtdd.model.Status;
 
 import java.time.LocalDate;
 
@@ -26,6 +27,11 @@ public class PromotionBuilder {
 
     public PromotionBuilder withMaxBidValue(double value) {
         this.promotion.setMaxBidValue(value);
+        return this;
+    }
+
+    public PromotionBuilder withStatus(Status status) {
+        this.promotion.setStatus(status);
         return this;
     }
 
