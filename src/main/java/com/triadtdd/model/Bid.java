@@ -11,6 +11,7 @@ public class Bid {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private LocalDateTime dateTime;
+    @Column(name = "bid_amount")
     private double value;
 
     @ManyToOne
