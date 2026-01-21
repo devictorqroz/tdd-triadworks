@@ -1,5 +1,6 @@
 package com.triadtdd.repository;
 
+import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
 import com.triadtdd.model.Status;
@@ -61,5 +62,13 @@ public class PromotionDAO {
 
     public void update(Promotion p) {
 
+    }
+
+    public void registerBid(Integer id, Bid bid) {
+        Promotion promotion = findById(id);
+
+        promotion.register(bid);
+
+        em.merge(promotion);
     }
 }

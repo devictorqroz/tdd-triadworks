@@ -88,4 +88,23 @@ public class PromotionDAOIntegrationTest {
         assertEquals("P2", results.get(0).getName());
         assertEquals("P1", results.get(1).getName());
     }
+
+    @Test
+    @DisplayName("Should register a new bid in a promotion correctly (Legacy Method)")
+    void shouldRegisterNewBidInPromotion() {
+        Customer rafael = new Customer("Rafael", "rafael@email.com");
+        Promotion promotion = PromotionBuilder.onePromotion().named("Apple TV").build();
+
+        entityManager.persist(rafael);
+        entityManager.persist(promotion);
+
+        Integer id = promotion.getId();
+        Bid bid = new Bid(rafael, 150.0);
+        dao.registerBid(id, bid);
+
+        Promotion found = dao.findById(id);
+        assertEquals(1, found.getBids().size());
+        assertEquals(150.0, found.getBids().get(0).getValue());
+    }
+
 }
