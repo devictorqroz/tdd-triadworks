@@ -41,6 +41,10 @@ public class Bid {
         return customer;
     }
 
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
     public void setPromotion(Promotion promotion) {
         this.promotion = promotion;
     }

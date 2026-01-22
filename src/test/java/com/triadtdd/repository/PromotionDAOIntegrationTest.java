@@ -30,7 +30,7 @@ public class PromotionDAOIntegrationTest {
 
     @Test
     @DisplayName("Should count only closed promotion")
-    void shouldCountClosedPromotion() {
+    void shouldCountClosedPromotions() {
         Promotion open = PromotionBuilder.onePromotion().named("Dell").withStatus(Status.OPEN).build();
         Promotion closed = PromotionBuilder.onePromotion().named("TV").withStatus(Status.CLOSED).build();
 
@@ -40,6 +40,19 @@ public class PromotionDAOIntegrationTest {
         Long total = dao.countClosed();
 
         assertEquals(1L, total);
+    }
+
+    @Test
+    @DisplayName("Should count open promotions correctly using optimized query")
+    void shouldCountOpenPromotions() {
+        entityManager.persist(PromotionBuilder.onePromotion().named("A").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("B").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("C").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("D").withStatus(Status.CLOSED).build());
+
+        Long total = dao.countOpen();
+
+        assertEquals(3L, total);
     }
 
     @Test
@@ -88,4 +101,23 @@ public class PromotionDAOIntegrationTest {
         assertEquals("P2", results.get(0).getName());
         assertEquals("P1", results.get(1).getName());
     }
+
+    @Test
+    @DisplayName("Should register a new bid in a promotion correctly (Legacy Method)")
+    void shouldRegisterNewBidInPromotion() {
+        Customer rafael = new Customer("Rafael", "rafael@email.com");
+        Promotion promotion = PromotionBuilder.onePromotion().named("Apple TV").build();
+
+        entityManager.persist(rafael);
+        entityManager.persist(promotion);
+
+        Integer id = promotion.getId();
+        Bid bid = new Bid(rafael, 150.0);
+        dao.registerBid(id, bid);
+
+        Promotion found = dao.findById(id);
+        assertEquals(1, found.getBids().size());
+        assertEquals(150.0, found.getBids().get(0).getValue());
+    }
+
 }

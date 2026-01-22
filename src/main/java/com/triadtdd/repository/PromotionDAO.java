@@ -1,5 +1,6 @@
 package com.triadtdd.repository;
 
+import com.triadtdd.model.Bid;
 import com.triadtdd.model.Customer;
 import com.triadtdd.model.Promotion;
 import com.triadtdd.model.Status;
@@ -31,10 +32,19 @@ public class PromotionDAO {
         return em.find(Promotion.class, id);
     }
 
-    public Long countClosed() {
-        return em.createQuery("select count(p) from Promotion p where p.status = :status", Long.class)
-                .setParameter("status", Status.CLOSED)
+    public Long countByStatus(Status status) {
+        String jpql = "select count(p) from Promotion p where p.status = :status";
+        return em.createQuery(jpql, Long.class)
+                .setParameter("status", status)
                 .getSingleResult();
+    }
+
+    public Long countClosed() {
+        return countByStatus(Status.CLOSED);
+    }
+
+    public Long countOpen() {
+        return countByStatus(Status.OPEN);
     }
 
     public List<Promotion> getOpenPromotions() {
@@ -43,7 +53,6 @@ public class PromotionDAO {
         } catch (InterruptedException e) {}
         return new ArrayList<>();
     }
-
 
     public List<Promotion> openFor(Customer customer, LocalDate start) {
         String jpql = "select p from Promotion p join p.bids b " +
@@ -61,5 +70,13 @@ public class PromotionDAO {
 
     public void update(Promotion p) {
 
+    }
+
+    public void registerBid(Integer id, Bid bid) {
+        Promotion promotion = findById(id);
+
+        promotion.register(bid);
+
+        em.merge(promotion);
     }
 }
