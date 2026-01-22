@@ -30,7 +30,7 @@ public class PromotionDAOIntegrationTest {
 
     @Test
     @DisplayName("Should count only closed promotion")
-    void shouldCountClosedPromotion() {
+    void shouldCountClosedPromotions() {
         Promotion open = PromotionBuilder.onePromotion().named("Dell").withStatus(Status.OPEN).build();
         Promotion closed = PromotionBuilder.onePromotion().named("TV").withStatus(Status.CLOSED).build();
 
@@ -40,6 +40,19 @@ public class PromotionDAOIntegrationTest {
         Long total = dao.countClosed();
 
         assertEquals(1L, total);
+    }
+
+    @Test
+    @DisplayName("Should count open promotions correctly using optimized query")
+    void shouldCountOpenPromotions() {
+        entityManager.persist(PromotionBuilder.onePromotion().named("A").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("B").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("C").withStatus(Status.OPEN).build());
+        entityManager.persist(PromotionBuilder.onePromotion().named("D").withStatus(Status.CLOSED).build());
+
+        Long total = dao.countOpen();
+
+        assertEquals(3L, total);
     }
 
     @Test
